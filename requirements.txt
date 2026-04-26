@@ -1,0 +1,6 @@
+pandas
+numpy
+matplotlib
+seaborn
+jupyter
+# sqlite3 is part of the Python standard library — no install needed
