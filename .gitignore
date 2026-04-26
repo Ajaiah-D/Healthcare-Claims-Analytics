@@ -1,0 +1,28 @@
+# --- data ---
+data/raw/*
+data/cleaned/*
+data/exports/*
+!data/raw/.gitkeep
+!data/cleaned/.gitkeep
+!data/exports/.gitkeep
+*.db
+*.sqlite
+*.sqlite3
+
+# --- jupyter ---
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
+# --- python ---
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+.venv/
+env/
+venv/
+
+# --- os ---
+.DS_Store
+Thumbs.db
+desktop.ini
