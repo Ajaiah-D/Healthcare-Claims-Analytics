@@ -1,6 +1,6 @@
 # Healthcare Claims Analytics
 
-**[View Tableau Dashboard](#)** ← link to be added on completion
+**[View Tableau Dashboard](https://public.tableau.com/app/profile/ajaiah.darlington/viz/HealthcareClaimsAnalyticsDashboard_17777471179890/HealthcareClaims-Summary)**
 
 ---
 
@@ -150,7 +150,7 @@ Healthcare-Claims-Analytics/
 ├── data/
 │   ├── raw/                           source CSVs — not committed (see .gitignore)
 │   └── exports/                       14 pre-aggregated CSVs for Tableau
-├── dashboard/                         Tableau workbook (.twbx) — to be added
+├── dashboard/                         Tableau workbook (.twbx)
 ├── cms_data.db                        local SQLite database (~483MB) — not committed
 ├── COLUMNS_REFERENCE.md               data dictionary for all source fields
 └── requirements.txt                   Python dependencies
