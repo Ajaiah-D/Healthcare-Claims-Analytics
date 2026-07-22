@@ -1,0 +1,6 @@
+combination,both_conditions_avg_spend,either_condition_avg_spend,neither_condition_avg_spend,prevalence_both_pct
+DIABETES + CHF,9810,6683,1003,20.0
+DIABETES + ISCHMCHT,8622,6253,750,26.7
+CHF + COPD,13350,7859,1472,8.8
+ISCHMCHT + DEPRESSN,9286,6395,974,14.9
+CHRNKIDN + DIABETES,12495,7337,1139,13.3

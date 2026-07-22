@@ -1,10 +1,11 @@
 # --- data ---
 data/raw/*
 data/cleaned/*
-data/exports/*
 !data/raw/.gitkeep
 !data/cleaned/.gitkeep
-!data/exports/.gitkeep
+# beneficiary_cohort.csv is a ~27MB patient-level export — too large to commit;
+# every other file in data/exports/ is small and tracked.
+data/exports/beneficiary_cohort.csv
 *.db
 *.sqlite
 *.sqlite3
@@ -26,3 +27,6 @@ venv/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# --- claude code ---
+.claude/

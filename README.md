@@ -2,6 +2,8 @@
 
 **[View Tableau Dashboard](https://public.tableau.com/app/profile/ajaiah.darlington/viz/HealthcareClaimsAnalyticsDashboard_17777471179890/HealthcareClaims-Summary)**
 
+![Healthcare Claims Analytics dashboard screenshot](assets/dashboard_screenshot.png)
+
 ---
 
 ## What This Project Is
@@ -149,8 +151,10 @@ Healthcare-Claims-Analytics/
 │   └── 06_exports.ipynb               final aggregates → data/exports/ for Tableau
 ├── data/
 │   ├── raw/                           source CSVs — not committed (see .gitignore)
-│   └── exports/                       14 pre-aggregated CSVs for Tableau
-├── dashboard/                         Tableau workbook (.twbx)
+│   └── exports/                       pre-aggregated CSVs for Tableau (beneficiary_cohort.csv
+│                                       excluded for size — see Data Notes)
+├── assets/
+│   └── dashboard_screenshot.png       preview image used in this README
 ├── cms_data.db                        local SQLite database (~483MB) — not committed
 ├── COLUMNS_REFERENCE.md               data dictionary for all source fields
 └── requirements.txt                   Python dependencies
@@ -205,3 +209,4 @@ Connect Tableau to the CSV files in `data/exports/`. Each file is self-contained
 - Beneficiary count drops slightly each year (116K → 115K → 113K) due to simulated deaths and disenrollment.
 - Chronic condition flags use 1 = condition present, 2 = condition absent (not the intuitive 0/1 — handled explicitly in all calculations).
 - ICD-9 codes are used throughout (not ICD-10) — the dataset predates the 2015 ICD-10 transition.
+- `data/exports/beneficiary_cohort.csv` (the patient-level export, ~27MB) is excluded from the repo via `.gitignore` to keep the repo lightweight. It's regenerated locally by `06_exports.ipynb` and was used to build the published Tableau dashboard — every other file in `data/exports/` is committed.
