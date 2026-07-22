@@ -30,3 +30,8 @@ desktop.ini
 
 # --- claude code ---
 .claude/
+
+# --- tableau temp files ---
+*.twbr
+~*.twb
+~*.twbx
