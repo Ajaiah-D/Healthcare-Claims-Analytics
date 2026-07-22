@@ -121,13 +121,13 @@ Pre-computes all final metrics and writes them to CSV files in `data/exports/`. 
 
 ## The Dashboard
 
-The Tableau dashboard is built directly from the files in `data/exports/`. Each CSV maps to one or more dashboard views:
+The Tableau dashboard is built directly from the files in `data/exports/`. The workbook itself is included at [`dashboard/Healthcare-Claims-Analytics-Dashboard.twbx`](dashboard/Healthcare-Claims-Analytics-Dashboard.twbx) if you'd like to open it directly in Tableau Desktop/Public rather than just viewing the published version. Each CSV maps to one or more dashboard views:
 
 | File | What It Powers |
 |---|---|
 | `summary_statistics.csv` | KPI cards at the top (total spend, beneficiary count, readmission rate) |
 | `condition_impact.csv` | "Cost by Condition" ranked bar chart |
-| `comorbidity_pairs.csv` | "High-Risk Combinations" table |
+| `comorbidity_pairs.csv` | "Why So Expensive?" high-risk condition combination chart |
 | `spending_by_condition_burden.csv` | "Conditions vs. Cost" curve |
 | `yearly_trends.csv` | Spending trend line (2008–2010) |
 | `drg_summary.csv` | DRG cost and readmission drill-down |
@@ -155,6 +155,8 @@ Healthcare-Claims-Analytics/
 │                                       excluded for size — see Data Notes)
 ├── assets/
 │   └── dashboard_screenshot.png       preview image used in this README
+├── dashboard/
+│   └── Healthcare-Claims-Analytics-Dashboard.twbx   the Tableau workbook
 ├── cms_data.db                        local SQLite database (~483MB) — not committed
 ├── COLUMNS_REFERENCE.md               data dictionary for all source fields
 └── requirements.txt                   Python dependencies
