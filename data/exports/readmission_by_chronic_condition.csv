@@ -1,7 +1,7 @@
 condition,readmit_rate_with_condition,readmit_rate_without_condition,risk_increase
-SP_CHF,11.0,7.0,4.0
-SP_COPD,12.0,8.1,3.9
-SP_DIABETES,10.4,7.7,2.7
-SP_ISCHMCHT,10.3,7.2,3.1
-SP_DEPRESSN,10.9,8.5,2.4
-SP_CHRNKIDN,11.8,7.6,4.2
+Heart Failure (CHF),11.0,7.0,4.0
+COPD,12.0,8.1,3.9
+Diabetes,10.4,7.7,2.7
+Ischemic Heart Disease,10.3,7.2,3.1
+Depression,10.9,8.5,2.4
+Chronic Kidney Disease,11.8,7.6,4.2
