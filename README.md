@@ -139,7 +139,7 @@ The Tableau dashboard has five charts built from four of the files in `data/expo
 | Why So Expensive? | `comorbidity_pairs.csv` | Average spend when both conditions in a pair are present |
 | Readmission Risk | `readmission_by_chronic_condition.csv` | 30-day readmission rate for stays by patients with each condition |
 
-> **Workbook status:** the packaged workbook in this repo carries the current data. The published Tableau Public version and the screenshot above predate two corrections and still need republishing: *Readmission Risk* (rates are 0.3–1.0 points higher after a join fix) and *Spending Tiers* (a new "No spend" band holds the 22% of beneficiary-years the chart previously left out).
+> **Workbook status:** the packaged workbook and the screenshot above carry the current data. If the published Tableau Public version has not been republished since, it still predates two corrections: *Readmission Risk* (rates are 0.3–1.0 points higher after a join fix) and *Spending Tiers* (a new "No spend" band holds the 22% of beneficiary-years the chart previously left out).
 
 The remaining exports support the findings above and are available for further views:
 
