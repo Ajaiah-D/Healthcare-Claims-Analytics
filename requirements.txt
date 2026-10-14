@@ -1,6 +1,7 @@
-pandas
-numpy
-matplotlib
-seaborn
-jupyter
+# Versions the notebooks were last executed with (Python 3.14).
+pandas==2.3.3
+jupyter==1.1.1
+nbconvert==7.17.0
+ipykernel==7.2.0
+pytest==9.1.1
 # sqlite3 is part of the Python standard library — no install needed

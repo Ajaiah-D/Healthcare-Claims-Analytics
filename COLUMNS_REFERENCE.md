@@ -8,27 +8,27 @@ Reference guide for all columns across the four main tables. Keep this open whil
 
 | Column | Definition | Type | Notes |
 |---|---|---|---|
-| `DESYNPUF_ID` | Beneficiary synthetic ID | int | Join key — unique per patient across all tables |
+| `DESYNPUF_ID` | Beneficiary synthetic ID | string | Join key — unique per patient across all tables |
 | `CLM_ID` | Unique claim identifier | int | — |
-| `SEGMENT` | Claim line segment number | int | A single hospital stay can span multiple claim segments |
-| `CLM_FROM_DT` | Claim start date | string (YYYYMMDD) | Format: 20080115 = Jan 15, 2008 |
-| `CLM_THRU_DT` | Claim end/through date | string (YYYYMMDD) | — |
+| `SEGMENT` | Claim segment number | int | 1 or 2. 68 long claims have a second row with the same `CLM_ID`; use `SEGMENT = 1` for one row per stay |
+| `CLM_FROM_DT` | Claim start date | int (YYYYMMDD) | Format: 20080115 = Jan 15, 2008 |
+| `CLM_THRU_DT` | Claim end/through date | int (YYYYMMDD) | — |
 | `PRVDR_NUM` | Provider/facility ID | string | Identifies the hospital |
 | `CLM_PMT_AMT` | **Medicare paid amount** | float | What Medicare reimbursed for this claim |
 | `NCH_PRMRY_PYR_CLM_PD_AMT` | Primary payer (non-Medicare) amount | float | Usually $0 (Medicare is primary). Non-zero if patient has other insurance |
 | `AT_PHYSN_NPI` | Attending physician NPI | string | National Provider ID of attending physician |
 | `OP_PHYSN_NPI` | Operating physician NPI | string | NPI of surgeon/operating physician |
 | `OT_PHYSN_NPI` | Other physician NPI | string | NPI of other involved physician |
-| `CLM_ADMSN_DT` | Hospital admission date | string (YYYYMMDD) | Actual day patient entered hospital |
+| `CLM_ADMSN_DT` | Hospital admission date | int (YYYYMMDD) | Actual day patient entered hospital |
 | `ADMTNG_ICD9_DGNS_CD` | Admitting diagnosis code | string | ICD-9 diagnosis that caused the admission |
 | `CLM_PASS_THRU_PER_DIEM_AMT` | Pass-through per diem amount | float | Capital/direct medical education costs |
 | `NCH_BENE_IP_DDCTBL_AMT` | **Beneficiary deductible amount** | float | What patient owes toward Part A deductible |
 | `NCH_BENE_PTA_COINSRNC_LBLTY_AM` | **Beneficiary coinsurance amount** | float | What patient owes as coinsurance (% of cost after deductible) |
 | `NCH_BENE_BLOOD_DDCTBL_LBLTY_AM` | Blood deductible liability | float | Patient's share of blood deductible |
 | `CLM_UTLZTN_DAY_CNT` | **Length of stay (LOS)** | int | Number of days patient stayed |
-| `NCH_BENE_DSCHRG_DT` | Discharge date | string (YYYYMMDD) | Day patient left hospital |
+| `NCH_BENE_DSCHRG_DT` | Discharge date | int (YYYYMMDD) | Day patient left hospital |
 | `CLM_DRG_CD` | **Diagnosis Related Group code** | string | DRG classification — determines inpatient payment rate |
-| `ICD9_DGNS_CD_1` through `ICD9_DGNS_CD_10` | Secondary diagnosis codes | string | Up to 10 ICD-9 codes describing patient conditions |
+| `ICD9_DGNS_CD_1` through `ICD9_DGNS_CD_10` | Diagnosis codes | string | `_1` is the primary diagnosis; `_2`–`_10` are secondary ICD-9 codes |
 | `ICD9_PRCDR_CD_1` through `ICD9_PRCDR_CD_6` | Procedure codes | string | Up to 6 ICD-9 codes for procedures performed |
 | `HCPCS_CD_1` through `HCPCS_CD_45` | Healthcare procedure codes | string | HCPCS codes for line-item services (up to 45) |
 
@@ -57,9 +57,9 @@ Annual snapshot per beneficiary. Files are split by year (2008, 2009, 2010), sta
 | Column | Definition | Type | Notes |
 |---|---|---|---|
 | `YEAR` | Calendar year | int | 2008, 2009, or 2010 (added during load) |
-| `DESYNPUF_ID` | Beneficiary synthetic ID | int | Join key |
-| `BENE_BIRTH_DT` | Date of birth | string (YYYYMMDD) | — |
-| `BENE_DEATH_DT` | Date of death | string (YYYYMMDD) | Blank if alive during that year |
+| `DESYNPUF_ID` | Beneficiary synthetic ID | string | Join key |
+| `BENE_BIRTH_DT` | Date of birth | int (YYYYMMDD) | — |
+| `BENE_DEATH_DT` | Date of death | int (YYYYMMDD) | Blank if alive during that year |
 | `BENE_SEX_IDENT_CD` | Sex | int | 1 = Male, 2 = Female |
 | `BENE_RACE_CD` | Race | int | 1 = White, 2 = Black, 3 = Other, 4 = Asian, 5 = Hispanic, 6 = Native American |
 | `BENE_ESRD_IND` | End-Stage Renal Disease indicator | string | Y = has ESRD, N = no |
@@ -100,9 +100,9 @@ One row per drug dispensed. Multiple rows per beneficiary per year.
 
 | Column | Definition | Type | Notes |
 |---|---|---|---|
-| `DESYNPUF_ID` | Beneficiary synthetic ID | int | Join key |
+| `DESYNPUF_ID` | Beneficiary synthetic ID | string | Join key |
 | `PDE_ID` | Prescription Drug Event ID | int | Unique ID for this drug dispensing |
-| `SRVC_DT` | Service date (dispense date) | string (YYYYMMDD) | When the pharmacy filled the prescription |
+| `SRVC_DT` | Service date (dispense date) | int (YYYYMMDD) | When the pharmacy filled the prescription |
 | `PROD_SRVC_ID` | **Product/Service ID (NDC)** | string | National Drug Code — identifies the exact drug |
 | `QTY_DSPNSD_NUM` | Quantity dispensed | int | Number of units (tablets, ml, etc.) |
 | `DAYS_SUPLY_NUM` | Days supply | int | Number of days the prescription covers (e.g., 30, 90) |
@@ -113,21 +113,27 @@ One row per drug dispensed. Multiple rows per beneficiary per year.
 
 ## Key Relationships
 
-### Join across tables:
-All tables join on `DESYNPUF_ID`:
+### Table grain and join keys
+
+| Table | One row per | Key |
+|---|---|---|
+| `beneficiary_summary` | beneficiary per year | (`DESYNPUF_ID`, `YEAR`) — enforced by a unique index in `01_setup.ipynb` |
+| `inpatient_claims` | claim segment | (`CLM_ID`, `SEGMENT`) |
+| `outpatient_claims` | claim segment | (`CLM_ID`, `SEGMENT`) |
+| `prescription_drug_events` | drug fill | `PDE_ID` |
+
+Every table carries `DESYNPUF_ID`, but **joining on it alone multiplies rows**: a beneficiary has up to three `beneficiary_summary` rows and many claims. Join claims to the beneficiary table on the ID *and* the year, and aggregate each claims table to that grain before combining them:
+
 ```sql
-SELECT 
-  b.DESYNPUF_ID,
-  b.BENE_BIRTH_DT,
-  b.SP_DIABETES,
-  SUM(ip.CLM_PMT_AMT) as inpatient_cost,
-  SUM(op.CLM_PMT_AMT) as outpatient_cost,
-  COUNT(rx.PROD_SRVC_ID) as num_drugs
+WITH ip AS (
+  SELECT DESYNPUF_ID, CAST(CLM_ADMSN_DT / 10000 AS INTEGER) AS YEAR,
+         SUM(CLM_PMT_AMT) AS inpatient_cost, COUNT(DISTINCT CLM_ID) AS stays
+  FROM inpatient_claims
+  GROUP BY 1, 2
+)
+SELECT b.DESYNPUF_ID, b.YEAR, b.SP_DIABETES, ip.inpatient_cost, ip.stays
 FROM beneficiary_summary b
-LEFT JOIN inpatient_claims ip ON b.DESYNPUF_ID = ip.DESYNPUF_ID
-LEFT JOIN outpatient_claims op ON b.DESYNPUF_ID = op.DESYNPUF_ID
-LEFT JOIN prescription_drug_events rx ON b.DESYNPUF_ID = rx.DESYNPUF_ID
-GROUP BY b.DESYNPUF_ID
+LEFT JOIN ip ON ip.DESYNPUF_ID = b.DESYNPUF_ID AND ip.YEAR = b.YEAR
 ```
 
 ### Cost hierarchy:
@@ -142,8 +148,10 @@ Use annual summary for quick comparisons, use claims-level detail for deep-dive 
 
 | Issue | Why | Fix |
 |---|---|---|
-| Negative `MEDREIMB_*` | Adjustment/credit issued | Keep in analysis — it's real activity |
+| Negative `MEDREIMB_*` | Adjustment/credit issued | Keep in analysis — it's real activity (19 beneficiary-years net negative; they land in the 'No spend' tier) |
 | Missing `BENE_DEATH_DT` | Patient alive | Treat as blank/NULL, not an error |
 | `HCPCS_CD_1` through `_45` mostly blank | Not all 45 codes used | Expected — typical claim uses 2–5 codes |
 | Multiple rows per `DESYNPUF_ID` in claims | Multiple claims per patient | Expected — use GROUP BY / aggregation |
-| Date columns are strings, not dates | CMS format: YYYYMMDD | Convert with `pd.to_datetime()` or SQL CAST |
+| Date columns are integers, not dates | CMS format: YYYYMMDD (e.g. `20080115`) | `pd.to_datetime(col.astype(str), format='%Y%m%d')`. In SQLite, `julianday()` on the raw integer returns NULL — rebuild `'YYYY-MM-DD'` with `substr()` first (see `src/claims_metrics.py`) |
+| Zero or negative `CLM_PMT_AMT` | Another payer was primary, claim denied, or an adjustment record | Excluded from cost-per-claim averages (`CLM_PMT_AMT > 0`); still counted as stays for readmissions |
+| Chronic flags vary by year | `beneficiary_summary` is annual | Take the flag from the year of the event, not any year |
