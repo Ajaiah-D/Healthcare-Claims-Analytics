@@ -1,4 +1,4 @@
-num_conditions,num_beneficiaries,avg_spend,median_spend,max_spend,pct_90
+num_conditions,beneficiary_years,avg_spend,median_spend,max_spend,pct_90
 0,125983,268.0,0.0,73000.0,740.0
 1,44306,1609.0,870.0,83120.0,3060.0
 2,41353,2632.0,1430.0,91700.0,5120.0
