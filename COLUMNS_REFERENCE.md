@@ -8,7 +8,7 @@ Reference guide for all columns across the four main tables. Keep this open whil
 
 | Column | Definition | Type | Notes |
 |---|---|---|---|
-| `DESYNPUF_ID` | Beneficiary synthetic ID | string | Join key — unique per patient across all tables |
+| `DESYNPUF_ID` | Beneficiary synthetic ID | string | Join key, unique per patient across all tables |
 | `CLM_ID` | Unique claim identifier | int | — |
 | `SEGMENT` | Claim segment number | int | 1 or 2. 68 long claims have a second row with the same `CLM_ID`; use `SEGMENT = 1` for one row per stay |
 | `CLM_FROM_DT` | Claim start date | int (YYYYMMDD) | Format: 20080115 = Jan 15, 2008 |
@@ -27,7 +27,7 @@ Reference guide for all columns across the four main tables. Keep this open whil
 | `NCH_BENE_BLOOD_DDCTBL_LBLTY_AM` | Blood deductible liability | float | Patient's share of blood deductible |
 | `CLM_UTLZTN_DAY_CNT` | **Length of stay (LOS)** | int | Number of days patient stayed |
 | `NCH_BENE_DSCHRG_DT` | Discharge date | int (YYYYMMDD) | Day patient left hospital |
-| `CLM_DRG_CD` | **Diagnosis Related Group code** | string | DRG classification — determines inpatient payment rate |
+| `CLM_DRG_CD` | **Diagnosis Related Group code** | string | DRG classification, determines inpatient payment rate |
 | `ICD9_DGNS_CD_1` through `ICD9_DGNS_CD_10` | Diagnosis codes | string | `_1` is the primary diagnosis; `_2`–`_10` are secondary ICD-9 codes |
 | `ICD9_PRCDR_CD_1` through `ICD9_PRCDR_CD_6` | Procedure codes | string | Up to 6 ICD-9 codes for procedures performed |
 | `HCPCS_CD_1` through `HCPCS_CD_45` | Healthcare procedure codes | string | HCPCS codes for line-item services (up to 45) |
@@ -45,8 +45,8 @@ Same structure as inpatient, with these differences/additions:
 | `ADMTNG_ICD9_DGNS_CD` | Referring diagnosis | string | Reason for the outpatient visit (not admission diagnosis) |
 
 **Omitted (inpatient only):**
-- `CLM_ADMSN_DT`, `NCH_BENE_DSCHRG_DT`, `CLM_DRG_CD`, `CLM_UTLZTN_DAY_CNT` — no admission/discharge or DRG for outpatient
-- `CLM_PASS_THRU_PER_DIEM_AMT` — no per diem for outpatient
+- `CLM_ADMSN_DT`, `NCH_BENE_DSCHRG_DT`, `CLM_DRG_CD`, `CLM_UTLZTN_DAY_CNT`: no admission/discharge or DRG for outpatient
+- `CLM_PASS_THRU_PER_DIEM_AMT`: no per diem for outpatient
 
 ---
 
@@ -103,7 +103,7 @@ One row per drug dispensed. Multiple rows per beneficiary per year.
 | `DESYNPUF_ID` | Beneficiary synthetic ID | string | Join key |
 | `PDE_ID` | Prescription Drug Event ID | int | Unique ID for this drug dispensing |
 | `SRVC_DT` | Service date (dispense date) | int (YYYYMMDD) | When the pharmacy filled the prescription |
-| `PROD_SRVC_ID` | **Product/Service ID (NDC)** | string | National Drug Code — identifies the exact drug |
+| `PROD_SRVC_ID` | **Product/Service ID (NDC)** | string | National Drug Code, identifies the exact drug |
 | `QTY_DSPNSD_NUM` | Quantity dispensed | int | Number of units (tablets, ml, etc.) |
 | `DAYS_SUPLY_NUM` | Days supply | int | Number of days the prescription covers (e.g., 30, 90) |
 | `PTNT_PAY_AMT` | **Patient pay amount** | float | What the beneficiary paid out-of-pocket |
@@ -117,7 +117,7 @@ One row per drug dispensed. Multiple rows per beneficiary per year.
 
 | Table | One row per | Key |
 |---|---|---|
-| `beneficiary_summary` | beneficiary per year | (`DESYNPUF_ID`, `YEAR`) — enforced by a unique index in `01_setup.ipynb` |
+| `beneficiary_summary` | beneficiary per year | (`DESYNPUF_ID`, `YEAR`), enforced by a unique index in `01_setup.ipynb` |
 | `inpatient_claims` | claim segment | (`CLM_ID`, `SEGMENT`) |
 | `outpatient_claims` | claim segment | (`CLM_ID`, `SEGMENT`) |
 | `prescription_drug_events` | drug fill | `PDE_ID` |
@@ -148,10 +148,10 @@ Use annual summary for quick comparisons, use claims-level detail for deep-dive 
 
 | Issue | Why | Fix |
 |---|---|---|
-| Negative `MEDREIMB_*` | Adjustment/credit issued | Keep in analysis — it's real activity (19 beneficiary-years net negative; they land in the 'No spend' tier) |
+| Negative `MEDREIMB_*` | Adjustment/credit issued | Keep in analysis; it's real activity (19 beneficiary-years net negative; they land in the 'No spend' tier) |
 | Missing `BENE_DEATH_DT` | Patient alive | Treat as blank/NULL, not an error |
-| `HCPCS_CD_1` through `_45` mostly blank | Not all 45 codes used | Expected — typical claim uses 2–5 codes |
-| Multiple rows per `DESYNPUF_ID` in claims | Multiple claims per patient | Expected — use GROUP BY / aggregation |
-| Date columns are integers, not dates | CMS format: YYYYMMDD (e.g. `20080115`) | `pd.to_datetime(col.astype(str), format='%Y%m%d')`. In SQLite, `julianday()` on the raw integer returns NULL — rebuild `'YYYY-MM-DD'` with `substr()` first (see `src/claims_metrics.py`) |
+| `HCPCS_CD_1` through `_45` mostly blank | Not all 45 codes used | Expected; typical claim uses 2–5 codes |
+| Multiple rows per `DESYNPUF_ID` in claims | Multiple claims per patient | Expected; use GROUP BY / aggregation |
+| Date columns are integers, not dates | CMS format: YYYYMMDD (e.g. `20080115`) | `pd.to_datetime(col.astype(str), format='%Y%m%d')`. In SQLite, `julianday()` on the raw integer returns NULL; rebuild `'YYYY-MM-DD'` with `substr()` first (see `src/claims_metrics.py`) |
 | Zero or negative `CLM_PMT_AMT` | Another payer was primary, claim denied, or an adjustment record | Excluded from cost-per-claim averages (`CLM_PMT_AMT > 0`); still counted as stays for readmissions |
 | Chronic flags vary by year | `beneficiary_summary` is annual | Take the flag from the year of the event, not any year |
