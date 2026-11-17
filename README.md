@@ -87,7 +87,7 @@ Every table carries a synthetic patient ID (`DESYNPUF_ID`). Cost fields reflect 
 
 ## How the Analysis Was Built
 
-The project runs as a sequence of six Jupyter notebooks. Metric definitions that more than one notebook needs (the spend formula, the readmission rule, spending tiers, condition labels) live once in [`src/claims_metrics.py`](src/claims_metrics.py) and are covered by unit tests in [`tests/`](tests/).
+The project runs as a sequence of six Jupyter notebooks. Metric definitions that more than one notebook needs (the spend formula, the readmission rule, spending tiers, condition labels) live once in [`src/claims_metrics.py`](src/claims_metrics.py) and are covered by unit tests in [`tests/`](tests/), which GitHub Actions runs on every push.
 
 ### [01_setup.ipynb](notebooks/01_setup.ipynb): Load the data into SQLite
 Reads the source CSV files into a local SQLite database (`cms_data.db`). The three annual beneficiary files are stacked into one table with a `YEAR` column added. Each table is fully replaced on every run, so re-running never duplicates rows. Indexes are added on the join keys, including a unique index that enforces one beneficiary row per year.
